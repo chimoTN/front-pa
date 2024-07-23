@@ -13,7 +13,7 @@ import 'primeicons/primeicons.css';
 
 const Connexion = () => {
     let navigate = useNavigate();
-    //const URL = `https://projet-annuel-1.onrender.com/api/users/signIn`;
+    const URL = `https://projet-annuel-1.onrender.com/api/users/signIn`;
     //const URL = `http://localhost:8080/api/users/signIn`;
 
     const [email, setEmail] = useState("");
@@ -37,38 +37,38 @@ const Connexion = () => {
         console.log("Mot de passe:", password);
     };
     
-    // const login = () => {
-    //     Axios.post(URL, {
-    //         mail: email,
-    //         password: password
-    //     }, {
-    //         withCredentials: true 
-    //     })
-    //     .then(response => {
-    //         console.log("login", response);
-    //         setUser(response.data);
-    //         sessionStorage.setItem( "token", response.data.token)
-    //         navigate("/accueil");
-    //     })
-    //     .catch(err => {
-    //         console.log('error => ', err);
-    //         setMessage("Erreur login ou password");
-    //     });
-    // };
-
-
-    const login = async () => {
-        try {
-             const response = await authService.login(email, password);
+    const login = () => {
+        Axios.post(URL, {
+             mail: email,
+             password: password
+        }, {
+             withCredentials: true 
+        })
+        .then(response => {
              console.log("login", response);
              setUser(response.data);
-             sessionStorage.setItem("token", response.data.token);
+             sessionStorage.setItem( "token", response.data.token)
              navigate("/accueil");
-        } catch (err) {
+        })
+        .catch(err => {
              console.log('error => ', err);
              setMessage("Erreur login ou password");
-        }
+        });
     };
+
+
+    // const login = async () => {
+    //     try {
+    //          const response = await authService.login(email, password);
+    //          console.log("login", response);
+    //          setUser(response.data);
+    //          sessionStorage.setItem("token", response.data.token);
+    //          navigate("/accueil");
+    //     } catch (err) {
+    //          console.log('error => ', err);
+    //          setMessage("Erreur login ou password");
+    //     }
+    // };
 
     return (
         <div style={{ height: '100vh', marginLeft: "40%", marginTop: 100 }}>
