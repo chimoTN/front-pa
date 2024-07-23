@@ -1,20 +1,28 @@
 import Axios from "axios"
+import config from "../config";
 
 const AuthService = () => {
 
 
-    const postCode = (text,language) => {
-        Axios.get(`jkj`, {
-            text: text,
-            language: language
-        })
-        .then(response => response)
-        .catch(err => {
-            console.log('error => ', err)
-            setMessage("Incorrect login or password");
-        })
-    }
+    const login = (email, password) => {
+        console.log("chemun ",config.URL_LOGIN)
+        return Axios.post(config.URL_LOGIN, {mail: email, password: password}, {
+            withCredentials: true 
+        });
+    };
 
+    const register = (formData) => {
+        return Axios.post(config.URL_REGISTER, {
+          mail: formData.email,
+          password: formData.password,
+          passwordCheck: formData.confirm
+        })
+    };
+
+    return {
+        login,
+        register
+    }
 
 }
 

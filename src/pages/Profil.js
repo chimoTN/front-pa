@@ -49,11 +49,11 @@ const Profile = () => {
 
   return (
     <div className="profile">
-      <h1>Profil de {profileData?.name}</h1>
+      <h1>Profil de {user?.name}</h1>
       <div className="profile-info">
         <h2>Informations Personnelles</h2>
-        <p><strong>Nom:</strong> {profileData?.name}</p>
-        <p><strong>Email:</strong> {profileData?.email}</p>
+        <p><strong>Nom:</strong> {user?.name}</p>
+        <p><strong>Email:</strong> {user?.email}</p>
         {/* Ajoutez d'autres informations de profil ici */}
       </div>
 

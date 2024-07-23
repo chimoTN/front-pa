@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 
 import NotFoundPage from './pages/NotFoundPage';
 import Connexion from './pages/connexion';
-import Accueil from './pages/accueil';
+import Accueil from './Acueille';
 import RegistrationForm from './pages/inscription';
 import Sidebar from './components/Header';
 import CodeEditor from './pages/codeEditor';
@@ -12,6 +12,7 @@ import ProfilePage from './pages/Profil';
 import SavedDevelopments from './pages/SavedDevelopments';
 import PrivateRoute from './PrivateRoute';
 import { UserProvider } from './context/appContext'; 
+
 
 const AppRouter = () => {
   return (

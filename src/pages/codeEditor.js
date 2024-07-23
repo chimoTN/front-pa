@@ -3,12 +3,11 @@ import '../style/codeEditeur.scss';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import Axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import CompilateurService from '../services/compilateurService';
 
 const CodeEditor = () => {
-  const URL = `http://localhost:8080/api/scripts/execute`;
-  const SAVE_URL = `http://localhost:8080/api/saveCode`;
+
   const location = useLocation();
   const [code, setCode] = useState(location.state?.code || '');
   const [terminal, setTerminal] = useState(null);
@@ -16,52 +15,108 @@ const CodeEditor = () => {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState('');
 
+  const compilateurService = CompilateurService();
+
   const handleChange = (event) => {
     setCode(event.target.value);
   };
 
-  const runCode = () => {
-    console.log('CODE:', code);
-    Axios({
-      method: 'get',
-      url: URL,
-      data: { code },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        setTerminal(response.data.output);
-        setShowTerminal(true);
-      })
-      .catch((err) => {
-        console.log('error => ', err);
-        setTerminal('Error executing code');
-        setShowTerminal(true);
-      });
+
+  const scriptDTO = {
+    name: "HelloWorld",  
+    protectionLevel: "PRIVATE", 
+    language: "Python",  
+    inputFiles: "",  
+    outputFiles: "", 
+    userId: 2
   };
 
-  const sharCode = () => {
-    Axios.post(URL, { code })
-      .then((response) => {
-        setTerminal(response.data.output);
-        setShowTerminal(true);
-      })
-      .catch((err) => {
-        console.log('error => ', err);
-        setTerminal('Error publication code');
-        setShowTerminal(true);
-      });
+  // const runCode = () => {
+  //   const token = sessionStorage.getItem('token'); 
+  //   console.log("token",token)
+    
+  //   Axios({
+  //     method: 'post',
+  //     url: `http://localhost:8080/api/scripts/execute/raw`,
+  //     data: {
+  //       scriptDTO: scriptDTO,
+  //       scriptContent: code
+  //     },
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${token}`
+  //     },
+  //   })
+  //     .then((response) => {
+  //       setTerminal(response.data);
+  //       setShowTerminal(true);
+  //     })
+  //     .catch((err) => {
+  //       console.log('error => ', err);
+  //       setTerminal('Error executing code');
+  //       setShowTerminal(true);
+  //     });
+  // };
+  
+  const runCode = async () => {
+    const token = sessionStorage.getItem('token');
+    console.log("token",token);
+
+    try {
+      const response = await compilateurService.executeScript(scriptDTO, code, token);
+      setTerminal(response.data);
+      setShowTerminal(true);
+    } catch (err) {
+      console.log('error => ', err);
+      setTerminal('Error executing code');
+      setShowTerminal(true);
+    }
   };
 
-  const saveCode = () => {
-    Axios.post(SAVE_URL, { name: saveName, code })
-      .then((response) => {
-        setShowSaveDialog(false);
-      })
-      .catch((err) => {
-        console.log('Error saving code:', err);
-      });
+
+  // const sharCode = () => {
+  //   Axios.post(URL, { code })
+  //     .then((response) => {
+  //       setTerminal(response.data.output);
+  //       setShowTerminal(true);
+  //     })
+  //     .catch((err) => {
+  //       console.log('error => ', err);
+  //       setTerminal('Error publication code');
+  //       setShowTerminal(true);
+  //     });
+  // };
+
+
+  const sharCode = async () => {
+    try {
+      const response = await CompilateurService().shareCode(code);
+      setTerminal(response.data.output);
+      setShowTerminal(true);
+    } catch (err) {
+      console.log('error => ', err);
+      setTerminal('Error publication code');
+      setShowTerminal(true);
+    }
+  };
+
+  // const saveCode = () => {
+  //   Axios.post(SAVE_URL, { name: saveName, code })
+  //     .then((response) => {
+  //       setShowSaveDialog(false);
+  //     })
+  //     .catch((err) => {
+  //       console.log('Error saving code:', err);
+  //     });
+  // };
+
+  const saveCode = async () => {
+    try {
+      await CompilateurService().saveCode(saveName, code);
+      setShowSaveDialog(false);
+    } catch (err) {
+      console.log('Error saving code:', err);
+    }
   };
 
   const handleSave = () => {
