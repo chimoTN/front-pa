@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../style/codeEditeur.scss';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { useLocation } from 'react-router-dom';
-import CompilateurService from '../services/compilateurService';
+import axios from 'axios';
+import { useUser } from "../context/appContext";
 
 const CodeEditor = () => {
-
   const location = useLocation();
   const [code, setCode] = useState(location.state?.code || '');
   const [terminal, setTerminal] = useState(null);
@@ -15,57 +15,80 @@ const CodeEditor = () => {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState('');
 
-  const compilateurService = CompilateurService();
+  //const [user, setUser] = useUser();
 
   const handleChange = (event) => {
     setCode(event.target.value);
   };
 
-
-  const scriptDTO = {
-    name: "HelloWorld",  
-    protectionLevel: "PRIVATE", 
-    language: "Python",  
-    inputFiles: "",  
-    outputFiles: "", 
-    userId: 2
+  const parseCode = (code) => {
+    return code
+    //return code.replace(/\r?\n|\r/g, "\\n").replace(/\s+/g, " ").trim());
   };
 
-  // const runCode = () => {
-  //   const token = sessionStorage.getItem('token'); 
-  //   console.log("token",token)
-    
-  //   Axios({
-  //     method: 'post',
-  //     url: `http://localhost:8080/api/scripts/execute/raw`,
-  //     data: {
-  //       scriptDTO: scriptDTO,
-  //       scriptContent: code
-  //     },
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${token}`
-  //     },
-  //   })
-  //     .then((response) => {
-  //       setTerminal(response.data);
-  //       setShowTerminal(true);
-  //     })
-  //     .catch((err) => {
-  //       console.log('error => ', err);
-  //       setTerminal('Error executing code');
-  //       setShowTerminal(true);
-  //     });
-  // };
-  
+  const scriptDTO = {
+    name: "yelloWorld",
+    protectionLevel: "PRIVATE",
+    language: "Python",
+    inputFiles: "",
+    outputFiles: ""
+  };
+
   const runCode = async () => {
     const token = sessionStorage.getItem('token');
-    console.log("token",token);
+    
+    
+    const scriptContent = parseCode(code);
+    console.log("scriptContent", scriptDTO,scriptContent);
+    
+    if (!token) {
+      console.error('No token found');
+      setTerminal('Unauthorized: No token found');
+      return;
+    }
 
+    
     try {
-      const response = await compilateurService.executeScript(scriptDTO, code, token);
-      setTerminal(response.data);
+      const postResponse = await axios.post(
+        'https://projet-annuel-1.onrender.com/api/scripts',
+        {
+          scriptDTO: {
+            name: "yelloWorld",
+            protectionLevel: "PRIVATE",
+            language: "Python",
+            inputFiles: "",
+            outputFiles: ""
+          },
+          scriptContent: "print('Hello, world!')"
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          withCredentials: true
+        }
+      );
+
+      console.log("RESPONSE : ",postResponse)
+
+      // const executeResponse = await axios.post(
+      //   `https://projet-annuel-1.onrender.com/api/scripts/execute/${postResponse.data.id}`,
+      //   {
+      //     fileIds: [],
+      //     scriptIds: []
+      //   },
+      //   {
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       'Authorization': `Bearer ${token}`
+      //     }
+      //   }
+      // );
+
+      setTerminal(postResponse.data);
       setShowTerminal(true);
+
     } catch (err) {
       console.log('error => ', err);
       setTerminal('Error executing code');
@@ -73,24 +96,27 @@ const CodeEditor = () => {
     }
   };
 
-
-  // const sharCode = () => {
-  //   Axios.post(URL, { code })
-  //     .then((response) => {
-  //       setTerminal(response.data.output);
-  //       setShowTerminal(true);
-  //     })
-  //     .catch((err) => {
-  //       console.log('error => ', err);
-  //       setTerminal('Error publication code');
-  //       setShowTerminal(true);
-  //     });
-  // };
-
-
   const sharCode = async () => {
+    const token = sessionStorage.getItem('token');
+    console.log("token", token);
+
+    const scriptContent = parseCode(code);
+    console.log("scriptContent", scriptContent);
+
     try {
-      const response = await CompilateurService().shareCode(code);
+      const response = await axios.post(
+        'https://projet-annuel-1.onrender.com/api/scripts',
+        {
+          scriptDTO,
+          scriptContent: code
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
       setTerminal(response.data.output);
       setShowTerminal(true);
     } catch (err) {
@@ -100,19 +126,27 @@ const CodeEditor = () => {
     }
   };
 
-  // const saveCode = () => {
-  //   Axios.post(SAVE_URL, { name: saveName, code })
-  //     .then((response) => {
-  //       setShowSaveDialog(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log('Error saving code:', err);
-  //     });
-  // };
-
   const saveCode = async () => {
+    const token = sessionStorage.getItem('token');
+    console.log("token", token);
+
+    const scriptContent = parseCode(code);
+    console.log("scriptContent", scriptContent);
+
     try {
-      await CompilateurService().saveCode(saveName, code);
+      const response = await axios.post(
+        'https://projet-annuel-1.onrender.com/api/scripts/save',
+        {
+          name: saveName,
+          code
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
       setShowSaveDialog(false);
     } catch (err) {
       console.log('Error saving code:', err);

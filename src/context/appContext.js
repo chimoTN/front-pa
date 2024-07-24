@@ -11,7 +11,6 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Vérifiez si l'utilisateur est connecté en vérifiant le token dans localStorage/sessionStorage
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (token) {
       setUser({ token });
@@ -20,7 +19,7 @@ export const UserProvider = ({ children }) => {
 
   const login = (token) => {
     setUser({ token });
-    localStorage.setItem('token', token); // Vous pouvez choisir de stocker le token dans sessionStorage
+    localStorage.setItem('token', token);
   };
 
   const logout = () => {

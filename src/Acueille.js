@@ -1,5 +1,7 @@
 import React from 'react';
-import Post from './Post'; // Assurez-vous d'importer correctement le composant Post
+import Post from './Post'; 
+import '../src/style/Accueil.scss'
+import '../src/style/Post.scss';
 
 const Accueil = () => {
   // Exemple de données de posts
