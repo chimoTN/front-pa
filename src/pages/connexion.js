@@ -36,6 +36,7 @@ const Connexion = () => {
     };
     
     const URL = `https://projet-annuel-1.onrender.com/api/users/signIn`;
+    //const URL = `http://localhost:8080/api/users/signIn`;
     const login = () => {
         Axios.post(URL, {
             mail: email,
@@ -52,7 +53,7 @@ const Connexion = () => {
             setUser(response.data);
             console.log("USER",user.token)
             //sessionStorage.setItem("token", response.data.token);
-            sessionStorage.setItem("token", response.data.token);
+            sessionStorage.setItem("token", "Bearer " + response.data.token);
             navigate("/accueil");
         })
         .catch(err => {

@@ -36,21 +36,22 @@ const CodeEditor = () => {
 
   const runCode = async () => {
     const token = sessionStorage.getItem('token');
-    
-    
+
+
     const scriptContent = parseCode(code);
     console.log("scriptContent", scriptDTO,scriptContent);
-    
+
     if (!token) {
       console.error('No token found');
       setTerminal('Unauthorized: No token found');
       return;
     }
 
-    
+
     try {
       const postResponse = await axios.post(
         'https://projet-annuel-1.onrender.com/api/scripts',
+        //'http://localhost:8080/api/scripts',
         {
           scriptDTO: {
             name: "yelloWorld",
@@ -64,7 +65,7 @@ const CodeEditor = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `${token}`
           },
           withCredentials: true
         }
@@ -86,7 +87,7 @@ const CodeEditor = () => {
       //   }
       // );
 
-      setTerminal(postResponse.data);
+      setTerminal(JSON.stringify(postResponse.data, null, 2));
       setShowTerminal(true);
 
     } catch (err) {
