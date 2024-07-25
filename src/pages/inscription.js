@@ -14,6 +14,7 @@ import 'primeicons/primeicons.css';                        // icons
 const RegistrationForm = () => {
 
   let navigate = useNavigate();
+  
   const URL = `http://localhost:8080/api/users/signUp`;
 
   const [formData, setFormData] = useState({

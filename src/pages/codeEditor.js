@@ -5,7 +5,6 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useUser } from "../context/appContext";
 
 const CodeEditor = () => {
   const location = useLocation();
@@ -15,15 +14,12 @@ const CodeEditor = () => {
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState('');
 
-  //const [user, setUser] = useUser();
-
   const handleChange = (event) => {
     setCode(event.target.value);
   };
 
   const parseCode = (code) => {
-    return code
-    //return code.replace(/\r?\n|\r/g, "\\n").replace(/\s+/g, " ").trim());
+    return code; // Vous pouvez personnaliser le parsing ici si nécessaire
   };
 
   const scriptDTO = {
@@ -37,9 +33,8 @@ const CodeEditor = () => {
   const runCode = async () => {
     const token = sessionStorage.getItem('token');
 
-
     const scriptContent = parseCode(code);
-    console.log("scriptContent", scriptDTO,scriptContent);
+    console.log("scriptContent", scriptDTO, scriptContent);
 
     if (!token) {
       console.error('No token found');
@@ -47,20 +42,13 @@ const CodeEditor = () => {
       return;
     }
 
-
     try {
+      // Crée un script avec le contenu fourni
       const postResponse = await axios.post(
-        'https://projet-annuel-1.onrender.com/api/scripts',
-        //'http://localhost:8080/api/scripts',
+        'http://localhost:8080/api/scripts',
         {
-          scriptDTO: {
-            name: "yelloWorld",
-            protectionLevel: "PRIVATE",
-            language: "Python",
-            inputFiles: "",
-            outputFiles: ""
-          },
-          scriptContent: "print('Hello, world!')"
+          scriptDTO,
+          scriptContent
         },
         {
           headers: {
@@ -71,27 +59,33 @@ const CodeEditor = () => {
         }
       );
 
-      console.log("RESPONSE : ",postResponse)
+      console.log("POST Response:", postResponse);
 
-      // const executeResponse = await axios.post(
-      //   `https://projet-annuel-1.onrender.com/api/scripts/execute/${postResponse.data.id}`,
-      //   {
-      //     fileIds: [],
-      //     scriptIds: []
-      //   },
-      //   {
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       'Authorization': `Bearer ${token}`
-      //     }
-      //   }
-      // );
+      // Préparer le corps pour l'exécution
+      const scriptId = postResponse.data.id;
 
-      setTerminal(JSON.stringify(postResponse.data, null, 2));
+      const executeResponse = await axios.post(
+        'http://localhost:8080/api/scripts/execute-pipeline',
+        {
+          initialScriptId: scriptId,
+          scriptToFileMap: {
+            [scriptId]: [] // Map des fichiers associés au script
+          }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `${token}`
+          }
+        }
+      );
+
+      console.log("Execute Response:", executeResponse);
+      setTerminal(JSON.stringify(executeResponse.data, null, 2));
       setShowTerminal(true);
 
     } catch (err) {
-      console.log('error => ', err);
+      console.error('Error =>', err);
       setTerminal('Error executing code');
       setShowTerminal(true);
     }
@@ -109,20 +103,20 @@ const CodeEditor = () => {
         'https://projet-annuel-1.onrender.com/api/scripts',
         {
           scriptDTO,
-          scriptContent: code
+          scriptContent
         },
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `${token}`
           }
         }
       );
       setTerminal(response.data.output);
       setShowTerminal(true);
     } catch (err) {
-      console.log('error => ', err);
-      setTerminal('Error publication code');
+      console.error('Error =>', err);
+      setTerminal('Error publishing code');
       setShowTerminal(true);
     }
   };
@@ -144,13 +138,13 @@ const CodeEditor = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `${token}`
           }
         }
       );
       setShowSaveDialog(false);
     } catch (err) {
-      console.log('Error saving code:', err);
+      console.error('Error saving code:', err);
     }
   };
 
@@ -177,7 +171,7 @@ const CodeEditor = () => {
         <Button label="PARTAGER" className="p-button-success" onClick={sharCode} />
         {showTerminal && (
           <Button
-            label={showTerminal ? 'Cacher Terminal' : 'Show Terminal'}
+            label={showTerminal ? 'Cacher Terminal' : 'Afficher Terminal'}
             className="p-button-secondary"
             onClick={() => setShowTerminal(!showTerminal)}
           />
@@ -186,7 +180,7 @@ const CodeEditor = () => {
 
       {showTerminal && (
         <div className="terminal-container">
-          {showTerminal && <pre className="terminal-output">{terminal}</pre>}
+          <pre className="terminal-output">{terminal}</pre>
         </div>
       )}
 
