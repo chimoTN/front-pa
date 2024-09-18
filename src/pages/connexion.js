@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 import { useUser } from "../context/appContext";
 import AuthService from "../services/authentificationService";
 
-import 'primereact/resources/themes/saga-blue/theme.css';  
-import 'primereact/resources/primereact.min.css';          
-import 'primeicons/primeicons.css';                        
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const Connexion = () => {
     let navigate = useNavigate();
@@ -34,10 +34,10 @@ const Connexion = () => {
         console.log("Email:", email);
         console.log("Mot de passe:", password);
     };
-    
+
     //const URL = `https://projet-annuel-1.onrender.com/api/users/signIn`;
     const URL = `http://localhost:8080/api/users/signIn`;
-    
+
     const login = () => {
         Axios.post(URL, {
             mail: email,
@@ -48,21 +48,24 @@ const Connexion = () => {
             },
             withCredentials: true
         })
-        .then(response => {
-            console.log("login", response);
-            //console.log("token:", response.data.token);
-            setUser(response.data);
-            console.log("USER",user.token)
-            //sessionStorage.setItem("token", response.data.token);
-            sessionStorage.setItem("token", "Bearer " + response.data.token);
-            navigate("/accueil");
-        })
-        .catch(err => {
-            console.log('error => ', err);
-            setMessage("Erreur login ou password");
-        });
+            .then(response => {
+                console.log("login", response);
+                //console.log("token:", response.data.token);
+                setUser(response.data);
+                console.log("USER",response.data.token)
+                //sessionStorage.setItem("token", response.data.token);
+                sessionStorage.setItem("token", "Bearer " + response.data.token);
+
+                localStorage.setItem("token", response.data.token);
+                localStorage.setItem("userId", response.data.userId);
+                navigate("/accueil");
+            })
+            .catch(err => {
+                console.log('error => ', err);
+                setMessage("Erreur login ou password");
+            });
     };
-    
+
 
     return (
         <div style={{ height: '100vh', marginLeft: "40%", marginTop: 100 }}>
@@ -93,7 +96,7 @@ const Connexion = () => {
                     <br/>
                     <Button onClick={login} label="Se connecter" className="p-button-success" />
                     <Link to='/inscription'>
-                        <span type="primary" style={{color : "red"}}>S'inscrire</span>  
+                        <span type="primary" style={{color : "red"}}>S'inscrire</span>
                     </Link>
                 </form>
                 {message && <p>{message}</p>}
