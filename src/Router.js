@@ -10,6 +10,7 @@ import Sidebar from './components/Header';
 import CodeEditor from './pages/codeEditor';
 import ProfilePage from './pages/Profil';
 import SavedDevelopments from './pages/SavedDevelopments';
+import NewEditor from './pages/newEditor';
 import PrivateRoute from './PrivateRoute';
 import { UserProvider } from './context/appContext'; 
 
@@ -25,12 +26,14 @@ const AppRouter = () => {
           <Route path="/inscription" element={<RegistrationForm />} />
           
           {/* Routes privées */}
-          <Route element={<PrivateRoute />}>
+          {/*<Route element={<PrivateRoute />}> */}
             <Route path="/accueil" element={<Accueil />} />
             <Route path="/code" element={<CodeEditor />} />
             <Route path="/saveDev" element={<SavedDevelopments />} />
             <Route path="/profil" element={<ProfilePage />} />
-          </Route>
+            <Route path="/newEditor" element={<NewEditor />} />
+            
+          {/*</Route> */}
           
           {/* Route pour la page 404 */}
           <Route path="*" element={<NotFoundPage />} />
