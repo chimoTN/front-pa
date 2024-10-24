@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "dotenv -e .env.locale react-scripts start",
-    "build": "npm run build",
+    "build": "react-scripts build",
     "serve-build": "serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
