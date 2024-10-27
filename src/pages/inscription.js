@@ -14,11 +14,12 @@ import 'primeicons/primeicons.css';                        // icons
 const RegistrationForm = () => {
 
   let navigate = useNavigate();
-  
+
   const URL = `http://localhost:8080/api/users/signUp`;
 
   const [formData, setFormData] = useState({
-    username: '',
+    firstName:'',
+    lastName:'',
     email: '',
     password: '',
     confirm: '',
@@ -49,52 +50,69 @@ const RegistrationForm = () => {
   const register = () => {
     Axios.post(URL, {
       mail: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       password: formData.password,
       passwordCheck: formData.confirm
     })
-    .then(response => {
-      console.log("register", response);
-      navigate("/"); 
-    })
-    .catch(err => {
-      console.log('error => ', err);
-    });
+        .then(response => {
+          console.log("register", response);
+          navigate("/");
+        })
+        .catch(err => {
+          console.log('error => ', err);
+        });
   };
-  
+
   return (
-    <div style={{ height: '100vh', marginLeft: "40%", marginTop: 100 }}>
-      <Card title="Inscription" style={{ width: '25rem' }}>
-        <form onSubmit={handleSubmit}>
-          <div className="p-field">
-            <label htmlFor="username">Nom d'utilisateur</label>
+      <div style={{ height: '100vh', marginLeft: "40%", marginTop: 100 }}>
+        <Card title="Inscription" style={{ width: '25rem' }}>
+          <form onSubmit={handleSubmit}>
+
+            <div className="p-field">
+              <label htmlFor="lastName">Nom</label>
+              <br/>
+              <InputText id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange}
+                         required/>
+            </div>
+
+            <div className="p-field">
+              <label htmlFor="firstName">Prenom</label>
+              <br/>
+              <InputText id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange}
+                         required/>
+            </div>
+
+
+            <div className="p-field">
+              <label htmlFor="email">E-mail</label>
+              <br/>
+              <InputText id="email" name="email" type="email" value={formData.email} onChange={handleInputChange}
+                         required/>
+            </div>
+            <div className="p-field">
+              <label htmlFor="password">Mot de passe</label>
+              <br/>
+              <Password id="password" name="password" value={formData.password} onChange={handleInputChange} required
+                        feedback={false}/>
+            </div>
+            <div className="p-field">
+              <label htmlFor="confirm">Confirmer le mot de passe</label>
+              <br/>
+              <Password id="confirm" name="confirm" value={formData.confirm} onChange={handleInputChange} required
+                        feedback={false}/>
+            </div>
             <br/>
-            <InputText id="username" name="username" value={formData.username} onChange={handleInputChange} required />
-          </div>
-          <div className="p-field">
-            <label htmlFor="email">E-mail</label>
+            <div className="p-field-checkbox">
+              <Checkbox inputId="agreement" name="agreement" onChange={handleCheckboxChange}
+                        checked={formData.agreement}/>
+              <label htmlFor="agreement"> J'ai lu et j'accepte les <a href="/">termes et conditions</a>.</label>
+            </div>
             <br/>
-            <InputText id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
-          </div>
-          <div className="p-field">
-            <label htmlFor="password">Mot de passe</label>
-            <br/>
-            <Password id="password" name="password" value={formData.password} onChange={handleInputChange} required feedback={false} />
-          </div>
-          <div className="p-field">
-            <label htmlFor="confirm">Confirmer le mot de passe</label>
-            <br/>
-            <Password id="confirm" name="confirm" value={formData.confirm} onChange={handleInputChange} required feedback={false} />
-          </div>
-          <br/>
-          <div className="p-field-checkbox">
-            <Checkbox inputId="agreement" name="agreement" onChange={handleCheckboxChange} checked={formData.agreement} />
-            <label htmlFor="agreement"> J'ai lu et j'accepte les <a href="/">termes et conditions</a>.</label>
-          </div>
-          <br/>
-          <Button type="submit" label="S'inscrire" className="p-mt-2" />
-        </form>
-      </Card>
-    </div>
+            <Button type="submit" label="S'inscrire" className="p-mt-2"/>
+          </form>
+        </Card>
+      </div>
   );
 };
 

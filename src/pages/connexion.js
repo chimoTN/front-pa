@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import AuthService from "../services/authentificationService";
 import { useUser } from "../context/appContext";
 
-import 'primereact/resources/themes/saga-blue/theme.css';  
-import 'primereact/resources/primereact.min.css';          
-import 'primeicons/primeicons.css';                        
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 
 const Connexion = () => {
@@ -40,12 +40,19 @@ const Connexion = () => {
         try {
             const response = await authService.login(email, password);
             setUser(response.data);
-            sessionStorage.setItem("token", response.data.token);
+            
+            sessionStorage.setItem("token", "Bearer " + response.data.token);
+
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("userId", response.data.userId);
+
             navigate("/accueil");
         } catch (err) {
             setMessage("Erreur login ou mot de passe");
         }
     };
+
+   
 
     return (
         <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -74,6 +81,7 @@ const Connexion = () => {
                         />
                     </div>
                     <br/>
+
                     <Button type="submit" label="Se connecter" className="p-button-success p-mt-2" />
                     <br/><br/>
                     ----------------------- or -----------------------
@@ -84,6 +92,7 @@ const Connexion = () => {
                         onClick={inscription}
                         style={{marginTop:'30'}}
                     />
+
                 </form>
                 {message && <p style={{ color: 'red', marginTop: '10px' }}>{message}</p>}
             </Card>

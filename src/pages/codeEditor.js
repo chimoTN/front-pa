@@ -4,7 +4,8 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import axios from "../context/axios_token";
+
 
 const CodeEditor = () => {
   const location = useLocation();
@@ -24,10 +25,42 @@ const CodeEditor = () => {
 
   const scriptDTO = {
     name: "yelloWorld",
+    location: "",
     protectionLevel: "PRIVATE",
     language: "Python",
-    inputFiles: "",
-    outputFiles: ""
+    inputFileExtensions: "",
+    outputFileNames: ""
+  };
+
+  const sharCode = async () => {
+    //const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token')
+    console.log("token dans ShareCode : ", token);
+
+    const scriptContent = parseCode(code);
+    console.log("scriptContent", scriptContent);
+
+    try {
+      const response = await axios.post(
+          'http://localhost:8080/api/scripts',
+          {
+            scriptDTO,
+            scriptContent
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization':`${token}`
+            }
+          }
+      );
+      setTerminal(response.data.output);
+      setShowTerminal(true);
+    } catch (err) {
+      console.error('Error =>', err);
+      setTerminal('Error publishing code');
+      setShowTerminal(true);
+    }
   };
 
   const runCode = async () => {
@@ -91,35 +124,6 @@ const CodeEditor = () => {
     }
   };
 
-  const sharCode = async () => {
-    const token = sessionStorage.getItem('token');
-    console.log("token", token);
-
-    const scriptContent = parseCode(code);
-    console.log("scriptContent", scriptContent);
-
-    try {
-      const response = await axios.post(
-        'https://projet-annuel-1.onrender.com/api/scripts',
-        {
-          scriptDTO,
-          scriptContent
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `${token}`
-          }
-        }
-      );
-      setTerminal(response.data.output);
-      setShowTerminal(true);
-    } catch (err) {
-      console.error('Error =>', err);
-      setTerminal('Error publishing code');
-      setShowTerminal(true);
-    }
-  };
 
   const saveCode = async () => {
     const token = sessionStorage.getItem('token');
