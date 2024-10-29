@@ -19,6 +19,11 @@ const AuthService = () => {
             lastName: formData.lastName,
             password: formData.password,
             passwordCheck: formData.confirm
+        }, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
     };
     
