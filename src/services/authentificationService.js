@@ -15,11 +15,13 @@ const AuthService = () => {
     const register = (formData) => {
         return Axios.post(config.URL_REGISTER, {
             mail: formData.email,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
             password: formData.password,
             passwordCheck: formData.confirm
         });
     };
-
+    
     return {
         login,
         register

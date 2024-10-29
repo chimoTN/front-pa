@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Axios from 'axios';
 import { FaCheck, FaUserPlus } from 'react-icons/fa';
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from "../context/axios_token";
+import UserService from '../services/userService';
 
 const UserProfile = ({ userId }) => {
     const [profileData, setProfileData] = useState(null);
@@ -15,42 +14,26 @@ const UserProfile = ({ userId }) => {
     const [modalTitle, setModalTitle] = useState('');
 
     useEffect(() => {
-        Axios.get(`http://localhost:8080/api/users/${userId}`)
-            .then(response => {
-                setProfileData(response.data);
-            })
-            .catch(err => {
-                console.error('Error fetching profile data:', err);
-            });
+        UserService.getProfileData(userId)
+            .then(response => setProfileData(response.data))
+            .catch(err => console.error('Error fetching profile data:', err));
 
-        Axios.get(`http://localhost:8080/api/users/${userId}/following`)
-            .then(response => {
-                setFollowing(response.data);
-            })
-            .catch(err => {
-                console.error('Error fetching following data:', err);
-            });
+        UserService.getFollowing(userId)
+            .then(response => setFollowing(response.data))
+            .catch(err => console.error('Error fetching following data:', err));
 
-        Axios.get(`http://localhost:8080/api/users/${userId}/followers`)
-            .then(response => {
-                setFollowers(response.data);
-            })
-            .catch(err => {
-                console.error('Error fetching followers data:', err);
-            });
+        UserService.getFollowers(userId)
+            .then(response => setFollowers(response.data))
+            .catch(err => console.error('Error fetching followers data:', err));
 
-        Axios.get(`http://localhost:8080/api/users/isFollowing/${userId}`)
-            .then(response => {
-                setIsFollowing(response.data);
-            })
-            .catch(err => {
-                console.error('Error checking if following:', err);
-            });
+        UserService.checkIsFollowing(userId)
+            .then(response => setIsFollowing(response.data))
+            .catch(err => console.error('Error checking if following:', err));
     }, [userId]);
 
     const handleFollow = () => {
         if (!isFollowing) {
-            axios.post(`http://localhost:8080/api/users/${userId}/follows`)
+            UserService.followUser(userId)
                 .then(response => {
                     if (response.status === 200) {
                         setIsFollowing(true);
@@ -62,15 +45,13 @@ const UserProfile = ({ userId }) => {
                         console.error('Failed to follow user');
                     }
                 })
-                .catch(err => {
-                    console.error('Error following user:', err);
-                });
+                .catch(err => console.error('Error following user:', err));
         }
     };
 
     const handleUnfollow = () => {
         if (isFollowing) {
-            axios.delete(`http://localhost:8080/api/users/${userId}/follows`)
+            UserService.unfollowUser(userId)
                 .then(response => {
                     if (response.status === 200) {
                         setIsFollowing(false);
@@ -82,9 +63,7 @@ const UserProfile = ({ userId }) => {
                         console.error('Failed to unfollow user');
                     }
                 })
-                .catch(err => {
-                    console.error('Error unfollowing user:', err);
-                });
+                .catch(err => console.error('Error unfollowing user:', err));
         }
     };
 
@@ -107,7 +86,7 @@ const UserProfile = ({ userId }) => {
         <div className="profile" style={{ fontSize: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
                 <h1 style={{ fontSize: '1.5em' }}>Profil de {profileData?.firstName} {profileData?.lastName}</h1>
-
+                
                 <div>
                     {userId === localStorage.getItem('userId') ? null : isFollowing ? (
                         <button

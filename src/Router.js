@@ -26,14 +26,14 @@ const AppRouter = () => {
           <Route path="/inscription" element={<RegistrationForm />} />
           
           {/* Routes privées */}
-          {/*<Route element={<PrivateRoute />}> */}
+          <Route element={<PrivateRoute />}> 
             <Route path="/accueil" element={<Accueil />} />
             <Route path="/code" element={<CodeEditor />} />
             <Route path="/saveDev" element={<SavedDevelopments />} />
             <Route path="/profil" element={<ProfilePage />} />
             <Route path="/newEditor" element={<NewEditor />} />
             
-          {/*</Route> */}
+          </Route>
           
           {/* Route pour la page 404 */}
           <Route path="*" element={<NotFoundPage />} />

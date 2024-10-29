@@ -1,4 +1,4 @@
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import '../style/newEditor.scss';
 import '../style/codeEditeur.scss';
 
@@ -22,40 +22,35 @@ const options = [
   { value: 'python', label: 'Python', icon: <FaPython /> },
 ];
 
-const def = `function add(){
-    return "First Compile then Run The Code.....";
-  }
-  console.log(add());`;
-
 const defValue = ``;
 
 const NewEditor = () => {
-    const [source, setsource] = useState('');
+    const [source, setSource] = useState('');
     const [id, setId] = useState('');
-    const [output, setoutput] = useState('');
-    const [input, setinput] = useState('');
-    const [selectedOption, setselectedOption] = useState(options[0]);
+    const [output, setOutput] = useState('');
+    const [input, setInput] = useState('');
+    const [selectedOption, setSelectedOption] = useState(options[0]);
     const [nameFile, setNameFile] = useState('New File');
     const [scriptDTO, setScriptDTO] = useState({
-      name: "yelloWorld",
-      protectionLevel: "PRIVATE",
-      language: "Python",
-      inputFiles: "",
-      outputFiles: "" 
+        name: "New File",
+        protectionLevel: "PRIVATE",
+        language: "Python",
+        inputFiles: "",
+        outputFiles: "" 
     });
   
     const toast = useRef(null);
     const compilateurService = CompilateurService();
-  
+
     function onChange(newValue) {
-      setsource(newValue);
+      setSource(newValue);
     }
   
     const changeScriptDTO = () => {
       setScriptDTO({
         name: nameFile,
         protectionLevel: "PRIVATE",
-        language: selectedOption.value, // Assurez-vous que c'est une chaîne et non un objet
+        language: "Python",
         inputFiles: "",
         outputFiles: "" 
       });
@@ -66,59 +61,68 @@ const NewEditor = () => {
     };
   
     const handleChange = (selected) => {
-      setselectedOption(selected);
+      setSelectedOption(selected);
     };
   
     const Compile = async () => {
       changeScriptDTO();
-  
+
       try {
-        const { data } = await compilateurService.executeScript(scriptDTO, source);
+        const { data } = await compilateurService.createScript(scriptDTO, source);
         setId(data.id);
         console.log("Script ID:", data.id);
+        setOutput('Compilation réussie !');
       } catch (error) {
-        setoutput("Error during compile: " + (error.response?.data?.message || error.message));
+        setOutput("Erreur lors de la compilation : " + (error.response?.data?.message || error.message));
       }
     };
   
     const Run = async () => {
       try {
-        const { data } = await compilateurService.executeScript(scriptDTO, source);
+
+        const scriptToFileMap = {
+          [id]: [1], 
+        };
+    
+        const { data } = await compilateurService.executePipeline(id, scriptToFileMap);
+    
         if (data.stderr) {
-          setoutput(data.stderr);
+          setOutput(data.stderr);
           setId(null);
           return;
         }
-        setoutput(data.stdout);
+        setOutput(data.stdout);
         setId(null);
       } catch (error) {
-        setoutput("Error during run: " + (error.response?.data?.message || error.message));
+        setOutput("Erreur lors de l'exécution : " + (error.response?.data?.message || error.message));
       }
     };
   
     const Save = async () => {
       try {
-        await compilateurService.saveCode(nameFile, source);
-        toast.current.show({ severity: 'success', summary: 'Success', detail: 'Code sauvegarder!' });
+        await compilateurService.updateScript(id, source);
+        toast.current.show({ severity: 'success', summary: 'Succès', detail: 'Code sauvegardé !' });
       } catch (error) {
-        toast.current.show({ severity: 'error', summary: 'Error', detail: 'March pas!' });
-        setoutput("Error during save: " + (error.response?.data?.message || error.message));
+        toast.current.show({ severity: 'error', summary: 'Erreur', detail: "La sauvegarde a échoué !" });
+        setOutput("Erreur lors de la sauvegarde : " + (error.response?.data?.message || error.message));
       }
     };
-  
+
+    
     const Share = async () => {
       try {
-        await compilateurService.shareCode(source);
+        await compilateurService.uploadFile(new Blob([source], { type: 'text/plain' }));
+        toast.current.show({ severity: 'success', summary: 'Succès', detail: 'Code partagé !' });
       } catch (error) {
-        setoutput("Error during share: " + (error.response?.data?.message || error.message));
+        setOutput("Erreur lors du partage : " + (error.response?.data?.message || error.message));
       }
     };
   
     return (
       <div className="container">
-        <Toast ref={toast} /> {/* Ajouter le composant Toast ici */}
+        <Toast ref={toast} />
         <div className="select-div">
-          <div className="title-div">Selectionner un language</div>
+          <div className="title-div">Sélectionnez un langage</div>
           <Select
             value={selectedOption}
             onChange={handleChange}
@@ -139,10 +143,10 @@ const NewEditor = () => {
           <div className="editor-and-output">
             <div className="editor-div">
               <nav className="navbar">
-                  <Button label="Compile" icon="pi pi-cog" onClick={Compile} className="p-button-outlined p-button-primary" />
-                  <Button label="Run" icon="pi pi-play" onClick={Run} className={`p-button-outlined ${id ? 'p-button-success' : 'p-button-disabled'}`} disabled={!id} />
-                  <Button label="Save" icon="pi pi-save" onClick={Save} className="p-button-outlined" />
-                  <Button label="Share" icon="pi pi-share-alt" onClick={Share} className="p-button-outlined" />
+                <Button label="Compile" icon="pi pi-cog" onClick={Compile} className="p-button-outlined p-button-primary" />
+                <Button label="Run" icon="pi pi-play" onClick={Run} className={`p-button-outlined ${id ? 'p-button-success' : 'p-button-disabled'}`} disabled={!id} />
+                <Button label="Save" icon="pi pi-save" onClick={Save} className="p-button-outlined" />
+                <Button label="Share - Save file" icon="pi pi-share-alt" onClick={Share} className="p-button-outlined" />
               </nav>
   
               <AceEditor
@@ -157,17 +161,20 @@ const NewEditor = () => {
                 onChange={onChange}
                 name="UNIQUE_ID_OF_DIV"
                 editorProps={{ $blockScrolling: true }}
-                setOptions={{ tabSize: 2 }}
+                setOptions={{
+                  useWorker: false,
+                  tabSize: 2
+               }}
               />
             </div>
   
             <div className="output-div">
               <div className="box">
-                <b>Entrée du programme:</b>
-                <textarea onChange={(e) => setinput(e.target.value)} />
+                <b>Entrée du programme :</b>
+                <textarea onChange={(e) => setInput(e.target.value)} />
               </div>
               <div className="box" style={{ height: '300px' }}> 
-                <b>Sortie du programme:</b>
+                <b>Sortie du programme :</b>
                 <textarea value={output} disabled />
               </div>
             </div>
@@ -177,5 +184,4 @@ const NewEditor = () => {
     );
   };
   
-  export default NewEditor;
-  
+export default NewEditor;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../src/style/Post.scss';
-import axios from "./context/axios_token";
+import PostService from './services/postService';
 
 const Post = ({ username, codeContent, script }) => {
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
@@ -15,8 +15,7 @@ const Post = ({ username, codeContent, script }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/scripts/${scriptId}/comments/`);
-        console.log('Fetched comments:', response.data);
+        const response = await PostService.getComments(scriptId);
         setPostComments(response.data);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -25,16 +24,8 @@ const Post = ({ username, codeContent, script }) => {
 
     const checkLikesAndDislikes = async () => {
       try {
-        const likeResponse = await axios.get(`http://localhost:8080/api/likes/${scriptId}`);
-        const dislikeResponse = await axios.get(`http://localhost:8080/api/dislikes/${scriptId}`);
-
-        if (likeResponse.data) {
-          setIsLiked(1);
-        } else if (dislikeResponse.data) {
-          setIsLiked(-1);
-        } else {
-          setIsLiked(0);
-        }
+        const { isLiked } = await PostService.getLikeStatus(scriptId);
+        setIsLiked(isLiked);
       } catch (error) {
         console.error('Error checking likes and dislikes:', error);
       }
@@ -49,55 +40,44 @@ const Post = ({ username, codeContent, script }) => {
   };
 
   const handleLike = async () => {
-    if (isLiked === 1) {
-      // Remove like
-      try {
-        await axios.delete(`http://localhost:8080/api/likes/${scriptId}`);
+    try {
+      if (isLiked === 1) {
+        await PostService.removeLike(scriptId);
         setLikes(likes - 1);
         setIsLiked(0);
-      } catch (error) {
-        console.error('Error removing like:', error);
-      }
-    } else {
-      // Add like
-      try {
-        await axios.post(`http://localhost:8080/api/likes/${scriptId}`);
+      } else {
+        await PostService.addLike(scriptId);
         setLikes(likes + 1);
         setIsLiked(1);
 
         if (isLiked === -1) {
-          // Remove dislike if it was present
-          await axios.delete(`http://localhost:8080/api/dislikes/${scriptId}`);
+          await PostService.removeDislike(scriptId);
           setDislikes(dislikes - 1);
         }
-      } catch (error) {
-        console.error('Error adding like:', error);
       }
+    } catch (error) {
+      console.error('Error handling like:', error);
     }
   };
 
   const handleDislike = async () => {
-    if (isLiked === -1) {
-      try {
-        await axios.delete(`http://localhost:8080/api/dislikes/${scriptId}`);
+    try {
+      if (isLiked === -1) {
+        await PostService.removeDislike(scriptId);
         setDislikes(dislikes - 1);
         setIsLiked(0);
-      } catch (error) {
-        console.error('Error removing dislike:', error);
-      }
-    } else {
-      try {
-        await axios.post(`http://localhost:8080/api/dislikes/${scriptId}`);
+      } else {
+        await PostService.addDislike(scriptId);
         setDislikes(dislikes + 1);
         setIsLiked(-1);
 
         if (isLiked === 1) {
-          await axios.delete(`http://localhost:8080/api/likes/${scriptId}`);
+          await PostService.removeLike(scriptId);
           setLikes(likes - 1);
         }
-      } catch (error) {
-        console.error('Error adding dislike:', error);
       }
+    } catch (error) {
+      console.error('Error handling dislike:', error);
     }
   };
 
@@ -108,19 +88,7 @@ const Post = ({ username, codeContent, script }) => {
   const handleAddComment = async () => {
     if (newComment.trim()) {
       try {
-        const commentDTO = {
-          scriptId: scriptId,
-          content: newComment
-        };
-
-        const response = await axios.post(`http://localhost:8080/api/scripts/${scriptId}/comments/`, commentDTO, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        console.log('Comment added:', response.data);
-
+        const response = await PostService.addComment(scriptId, newComment);
         if (response.status === 201) {
           setPostComments([...postComments, response.data]);
           setNewComment('');
@@ -132,54 +100,54 @@ const Post = ({ username, codeContent, script }) => {
   };
 
   return (
-      <div className="post">
-        <div className="post-header">
-          <h3>{username}</h3>
-        </div>
-        <div className="post-code">
+    <div className="post">
+      <div className="post-header">
+        <h3>{username}</h3>
+      </div>
+      <div className="post-code">
         <pre>
           {isCodeExpanded ? codeContent : `${codeContent.substring(0, 100)}...`}
         </pre>
-          <button onClick={toggleCodeView}>
-            {isCodeExpanded ? 'Show Less' : 'Show More'}
+        <button onClick={toggleCodeView}>
+          {isCodeExpanded ? 'Show Less' : 'Show More'}
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <div className="post-actions">
+          <button
+            onClick={handleLike}
+            style={{ backgroundColor: isLiked === 1 ? 'blue' : 'gray' }}
+          >
+            👍 {likes}
           </button>
         </div>
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <div className="post-actions">
-            <button
-                onClick={handleLike}
-                style={{ backgroundColor: isLiked === 1 ? 'blue' : 'gray' }}
-            >
-              👍 {likes}
-            </button>
-          </div>
-          <div className="post-actions">
-            <button
-                onClick={handleDislike}
-                style={{ backgroundColor: isLiked === -1 ? 'red' : 'gray' }}
-            >
-              👎 {dislikes}
-            </button>
-          </div>
-        </div>
-
-        <div className="post-comments">
-          <h4>Commentaires</h4>
-          <ul>
-            {postComments.map((comment) => (
-                <li key={comment.commentId}>{comment.content}</li>
-            ))}
-          </ul>
-          <input
-              type="text"
-              value={newComment}
-              onChange={handleCommentChange}
-              placeholder="Ajouter un commentaire"
-          />
-          <button onClick={handleAddComment}>Post Comment</button>
+        <div className="post-actions">
+          <button
+            onClick={handleDislike}
+            style={{ backgroundColor: isLiked === -1 ? 'red' : 'gray' }}
+          >
+            👎 {dislikes}
+          </button>
         </div>
       </div>
+
+      <div className="post-comments">
+        <h4>Commentaires</h4>
+        <ul>
+          {postComments.map((comment) => (
+            <li key={comment.commentId}>{comment.content}</li>
+          ))}
+        </ul>
+        <input
+          type="text"
+          value={newComment}
+          onChange={handleCommentChange}
+          placeholder="Ajouter un commentaire"
+        />
+        <button onClick={handleAddComment}>Post Comment</button>
+      </div>
+    </div>
   );
 };
 

@@ -18,7 +18,7 @@ const Accueil = () => {
   useEffect(() => {
     const fetchScripts = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/scripts');
+        const response = await axios.get('https://projet-annuel-1.onrender.com/api/scripts');
         if (response.data.length === 0) {
           setPosts([
             // Exemple de données
@@ -37,7 +37,7 @@ const Accueil = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`http://localhost:8080/api/users/search?query=${searchQuery}`);
+      const response = await axios.get(`https://projet-annuel-1.onrender.com/api/users/search?query=${searchQuery}`);
       setSearchResults(response.data);
     } catch (error) {
       console.error('Erreur lors de la recherche des personnes:', error);

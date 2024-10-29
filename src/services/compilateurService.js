@@ -2,54 +2,64 @@ import Axios from 'axios';
 import config from '../config';
 
 const CompilateurService = () => {
-    
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-    const compileScript = (scriptDTO, scriptContent) => {
-        return Axios.post(`${config.URL_CODE_EXEC}/scripts`, {
+    // Créer un nouveau script
+    const createScript = (scriptDTO, scriptContent) => {
+        return Axios.post(`${config.URL_CREATE_SCRIPT}`, {
             scriptDTO,
             scriptContent
         }, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `${token}`
+                'Authorization': `Bearer ${token}`
             }
         });
     };
 
-    const executeScript = (initialScriptId, scriptToFileMap) => {
-        return Axios.get(`${config.URL_CODE_EXEC}/scripts/execute`, {
-            initialScriptId,
-            scriptToFileMap
+    // Upload du fichier généré pour le script
+    const uploadFile = (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        return Axios.post(`${config.URL_UPLOAD_FILE}`, formData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+    };
+
+    // Exécuter le script via le pipeline
+    const executePipeline = (initialScriptId, scriptToFileMap) => {
+        return Axios.post(`${config.URL_EXECUTE_PIPELINE}`, {
+          initialScriptId,
+          scriptToFileMap
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      };
+
+    // Mettre à jour un script existant
+    const updateScript = (scriptId, scriptContent) => {
+        return Axios.patch(`${config.URL_UPDATE_SCRIPT}/${scriptId}`, {
+            scriptContent
         }, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `${token}`
-            }
-        });
-    };
-
-    const shareCode = (code) => {
-        return Axios.post(`${config.URL_CODE_EXEC_JECPAS}/scripts/execute`, { code }, {
-            headers: {
-                'Authorization': `${token}`
-            }
-        });
-    };
-
-    const saveCode = (name, code) => {
-        return Axios.post(`${config.URL_SAVE_CODE}/saveCode`, { name, code }, {
-            headers: {
-                'Authorization': `${token}`
+                'Authorization': `Bearer ${token}`
             }
         });
     };
 
     return {
-        compileScript,
-        executeScript,
-        shareCode,
-        saveCode
+        createScript,
+        uploadFile,
+        executePipeline,
+        updateScript
     };
 };
 

@@ -10,7 +10,7 @@ const SavedDevelopments = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Axios.get('http://localhost:8080/api/scripts')
+    Axios.get('https://projet-annuel-1.onrender.com/api/scripts')
       .then(response => {
         setScripts(response.data);
       })

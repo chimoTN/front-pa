@@ -6,6 +6,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
+import AuthService from "../services/authentificationService";
 
 import 'primereact/resources/themes/saga-blue/theme.css';  // PrimeReact theme
 import 'primereact/resources/primereact.min.css';          // core css
@@ -14,8 +15,7 @@ import 'primeicons/primeicons.css';                        // icons
 const RegistrationForm = () => {
 
   let navigate = useNavigate();
-
-  const URL = `http://localhost:8080/api/users/signUp`;
+  const authService = AuthService();
 
   const [formData, setFormData] = useState({
     firstName:'',
@@ -48,21 +48,15 @@ const RegistrationForm = () => {
   };
 
   const register = () => {
-    Axios.post(URL, {
-      mail: formData.email,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      password: formData.password,
-      passwordCheck: formData.confirm
-    })
+    authService.register(formData)
         .then(response => {
-          console.log("register", response);
-          navigate("/");
+            console.log("register", response);
+            navigate("/");
         })
         .catch(err => {
-          console.log('error => ', err);
+            console.log('error => ', err);
         });
-  };
+};
 
   return (
       <div style={{ height: '100vh', marginLeft: "40%", marginTop: 100 }}>
