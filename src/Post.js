@@ -13,6 +13,7 @@ const Post = ({ username, codeContent, script }) => {
   const scriptId = script.id;
 
   useEffect(() => {
+    console.log("codeContent : " + codeContent + " postId : " + script.id);
     const fetchComments = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/scripts/${scriptId}/comments/`);

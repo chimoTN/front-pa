@@ -12,6 +12,8 @@ const Accueil = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalUserId, setModalUserId] = useState(null);
+  const [contents, setContents] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem('token');
 
@@ -23,9 +25,24 @@ const Accueil = () => {
           setPosts([
             // Exemple de données
           ]);
+          setLoading(false);
         } else {
           console.log(response.data)
           setPosts(response.data);
+
+          const contentsMap = {};
+
+          await Promise.all(
+            response.data.map(async (post) => {
+              console.log("post.id = " + post.id)
+              const scriptContent = await axios.get(`http://localhost:8080/api/scripts/${post.id}/content`)
+              console.log(scriptContent);
+              contentsMap[post.id] = scriptContent.data;
+            })
+          );
+
+          setContents(contentsMap);
+          setLoading(false);
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des scripts:', error);
@@ -33,6 +50,18 @@ const Accueil = () => {
     };
     fetchScripts();
   }, [token]);
+
+  const fetchContent = async (postId) => {
+    try {
+
+      const response = await axios.get(`http://localhost:8080/api/scripts/${postId}/content`)
+      console.log(response.data);
+      return response.data;
+
+    } catch(error) {
+      console.error('Erreur lors de la récupération du contenu:', error);
+    }
+  }
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -55,6 +84,10 @@ const Accueil = () => {
     setIsModalOpen(false);
     setModalUserId(null);
   };
+
+  if(loading) {
+    return (<div>Chargements des posts...</div>);
+  }
 
   return (
       <div className="accueil">
@@ -83,7 +116,7 @@ const Accueil = () => {
         </div>
         <div className="posts">
           {posts.map(post => (
-              <Post key={post.scriptDTO.id} username={"username"} codeContent={post.scriptContent} script={post.scriptDTO} />
+              <Post key={post.id} username={"username"} codeContent={contents[post.id]} script={post} />
           ))}
         </div>
 
