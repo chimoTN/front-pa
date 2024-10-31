@@ -12,6 +12,8 @@ const Accueil = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalUserId, setModalUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [contents, setContents] = useState(null);
 
   const token = localStorage.getItem('token');
 
@@ -23,9 +25,24 @@ const Accueil = () => {
           setPosts([
             // Exemple de données
           ]);
+          setLoading(false);
         } else {
           console.log(response.data)
           setPosts(response.data);
+
+          const contentsMap = {};
+
+          await Promise.all(
+            response.data.map(async (post) => {
+              console.log("post.id = " + post.id)
+              const scriptContent = await axios.get(`http://projet-annuel-1.onrender.com/api/scripts/${post.id}/content`)
+              console.log(scriptContent);
+              contentsMap[post.id] = scriptContent.data;
+            })
+          );
+
+          setContents(contentsMap);
+          setLoading(false);
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des scripts:', error);
@@ -56,6 +73,10 @@ const Accueil = () => {
     setModalUserId(null);
   };
 
+  if(loading) {
+    return (<div>Chargements des posts...</div>);
+  }
+
   return (
       <div className="accueil">
         <form className="search-form" onSubmit={handleSearch}>
@@ -85,10 +106,10 @@ const Accueil = () => {
         <div className="posts">
           {posts.map(post => (
             <Post 
-              key={post?.scriptDTO?.id || Math.random()} // Utiliser une clé alternative temporaire si l'id est indéfini
+              key={post.id || Math.random()} // Utiliser une clé alternative temporaire si l'id est indéfini
               username={"username"} 
-              codeContent={post.scriptContent} 
-              script={post.scriptDTO || {}} // Passer un objet vide par défaut si scriptDTO est indéfini
+              codeContent={contents[post.id]} 
+              script={post || {}} // Passer un objet vide par défaut si scriptDTO est indéfini
             />
           ))}
         </div>
