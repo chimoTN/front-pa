@@ -27,7 +27,8 @@ const Accueil = () => {
           ]);
           setLoading(false);
         } else {
-          console.log(response.data)
+          console.log("bonjour d'ici");
+          console.log("reponse : " + response.data)
           setPosts(response.data);
 
           const contentsMap = {};
