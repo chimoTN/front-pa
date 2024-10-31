@@ -44,8 +44,9 @@ const CompilateurService = () => {
       };
 
     // Mettre à jour un script existant
-    const updateScript = (scriptId, scriptContent) => {
+    const updateScript = (scriptId, scriptContent, scriptDTO) => {
         return Axios.patch(`${config.URL_UPDATE_SCRIPT}/${scriptId}`, {
+            scriptDTO, // Inclut l'objet scriptDTO complet
             scriptContent
         }, {
             headers: {
