@@ -35,7 +35,7 @@ const Accueil = () => {
           await Promise.all(
             response.data.map(async (post) => {
               console.log("post.id = " + post.id)
-              const scriptContent = await axios.get(`http://projet-annuel-1.onrender.com/api/scripts/${post.id}/content`)
+              const scriptContent = await axios.get(`https://projet-annuel-1.onrender.com/api/scripts/${post.id}/content`)
               console.log(scriptContent);
               contentsMap[post.id] = scriptContent.data;
             })
