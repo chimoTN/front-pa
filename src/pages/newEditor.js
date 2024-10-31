@@ -30,8 +30,8 @@ const options = [
 
 const defValue = ``;
 
-const NewEditor = () => {
-    const [source, setSource] = useState('');
+const NewEditor = ({ scriptContent }) => {
+    const [source, setSource] = useState(scriptContent || '');
     const [id, setId] = useState('');
     const [fileId, setFileId] = useState(null); 
     const [output, setOutput] = useState('');
@@ -47,7 +47,7 @@ const NewEditor = () => {
 
 
     const [scriptDTO, setScriptDTO] = useState({
-        name: "New File",
+        name: nameFile,
         protectionLevel: "PRIVATE",
         language: "Python",
         inputFiles: "",
@@ -61,18 +61,9 @@ const NewEditor = () => {
       setSource(newValue);
     }
   
-    const changeScriptDTO = () => {
-      setScriptDTO({
-        name: nameFile,
-        protectionLevel: "PRIVATE",
-        language: "Python",
-        inputFiles: "",
-        outputFiles: "" 
-      });
-    };
-  
     const nameChange = (e) => {
       setNameFile(e.target.value);
+      console.log("New name", nameFile)
     };
   
     const handleChange = (selected) => {
@@ -80,7 +71,13 @@ const NewEditor = () => {
     };
   
     const Compile = async () => {
-      changeScriptDTO();
+      setScriptDTO({
+        name: nameFile,
+        protectionLevel: "PRIVATE",
+        language: "Python",
+        inputFiles: "",
+        outputFiles: "" 
+      });
 
       try {
         const { data } = await compilateurService.createScript(scriptDTO, source);
@@ -164,6 +161,14 @@ const NewEditor = () => {
     useEffect(() =>{
       Save();
     },[inputFiles,outputFiles])
+
+    useEffect(() => {
+      if (scriptContent) {
+        setSource(scriptContent);
+      }
+      console.log("scriptContent = ",scriptContent)
+      console.log("source = ",source);
+    }, [scriptContent]);
 
 
     return (

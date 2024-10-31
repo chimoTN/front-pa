@@ -4,10 +4,13 @@ import Axios from 'axios';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import CompilateurService from '../services/compilateurService';
 
 const SavedDevelopments = () => {
   const [scripts, setScripts] = useState([]);
   const navigate = useNavigate();
+
+  const compilateurService = CompilateurService();
 
   useEffect(() => {
     Axios.get('https://projet-annuel-1.onrender.com/api/scripts')
@@ -19,8 +22,16 @@ const SavedDevelopments = () => {
       });
   }, []);
 
-  const handleRunScript = (script) => {
-    navigate('/code', { state: { code: script.content } });
+
+  const handleRunScript = async (script) => {
+    try {
+      const response = await compilateurService.recupContent(script.id);
+      const scriptContent = response.data;
+  
+      navigate('/newEditor', { state: { code: scriptContent } }); 
+    } catch (error) {
+      console.error("Erreur lors de la récupération du script:", error);
+    }
   };
 
   return (

@@ -56,11 +56,21 @@ const CompilateurService = () => {
         });
     };
 
+    const recupContent = (scriptId) => {
+        return Axios.get(`${process.env.REACT_APP_API_URL}/scripts/${scriptId}/content`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    }
+
     return {
         createScript,
         uploadFile,
         executePipeline,
-        updateScript
+        updateScript,
+        recupContent
     };
 };
 
