@@ -81,9 +81,15 @@ const Accueil = () => {
               </div>
           ))}
         </div>
+       
         <div className="posts">
           {posts.map(post => (
-              <Post key={post.scriptDTO.id} username={"username"} codeContent={post.scriptContent} script={post.scriptDTO} />
+            <Post 
+              key={post?.scriptDTO?.id || Math.random()} // Utiliser une clé alternative temporaire si l'id est indéfini
+              username={"username"} 
+              codeContent={post.scriptContent} 
+              script={post.scriptDTO || {}} // Passer un objet vide par défaut si scriptDTO est indéfini
+            />
           ))}
         </div>
 

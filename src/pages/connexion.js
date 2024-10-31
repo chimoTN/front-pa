@@ -46,7 +46,7 @@ const Connexion = () => {
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("userId", response.data.userId);
 
-            navigate("/accueil");
+            navigate("/newEditor");
         } catch (err) {
             setMessage("Erreur login ou mot de passe");
         }

@@ -69,9 +69,12 @@ const NewEditor = () => {
 
       try {
         const { data } = await compilateurService.createScript(scriptDTO, source);
+        console.log(" === Compile ===", data)
+
         setId(data.id);
-        console.log("Script ID:", data.id);
+
         setOutput('Compilation réussie !');
+
       } catch (error) {
         setOutput("Erreur lors de la compilation : " + (error.response?.data?.message || error.message));
       }
@@ -81,18 +84,14 @@ const NewEditor = () => {
       try {
 
         const scriptToFileMap = {
-          [id]: [1], 
+          [id]: [], 
         };
     
         const { data } = await compilateurService.executePipeline(id, scriptToFileMap);
     
-        if (data.stderr) {
-          setOutput(data.stderr);
-          setId(null);
-          return;
-        }
-        setOutput(data.stdout);
-        setId(null);
+        console.log(" === RUN === :", data)
+
+        setOutput(data);
       } catch (error) {
         setOutput("Erreur lors de l'exécution : " + (error.response?.data?.message || error.message));
       }
@@ -117,7 +116,7 @@ const NewEditor = () => {
         setOutput("Erreur lors du partage : " + (error.response?.data?.message || error.message));
       }
     };
-  
+
     return (
       <div className="container">
         <Toast ref={toast} />
@@ -144,7 +143,16 @@ const NewEditor = () => {
             <div className="editor-div">
               <nav className="navbar">
                 <Button label="Compile" icon="pi pi-cog" onClick={Compile} className="p-button-outlined p-button-primary" />
-                <Button label="Run" icon="pi pi-play" onClick={Run} className={`p-button-outlined ${id ? 'p-button-success' : 'p-button-disabled'}`} disabled={!id} />
+                
+
+                <Button 
+                  label="Run" 
+                  icon="pi pi-play" 
+                  onClick={Run} 
+                  className={`p-button-outlined ${id ? 'p-button-primary' : 'p-button-disabled'}`} 
+                  disabled={!id} 
+                />
+
                 <Button label="Save" icon="pi pi-save" onClick={Save} className="p-button-outlined" />
                 <Button label="Share - Save file" icon="pi pi-share-alt" onClick={Share} className="p-button-outlined" />
               </nav>
