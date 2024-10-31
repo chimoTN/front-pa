@@ -3,7 +3,6 @@ import axios from 'axios';
 axios.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token');
-        console.log("je récupère le token a partir de axios_token : " + token)
         if (token) {
             console.log("c'est bon !")
             config.headers['Authorization'] = `Bearer ${token}`;
