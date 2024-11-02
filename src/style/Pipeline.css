@@ -103,3 +103,20 @@ button.btn-danger:hover {
     transform: translateY(0); /* Retour à la position initiale au clic */
     box-shadow: none; /* Supprimer l'ombre au clic */
 }
+
+
+.available-scripts-container {
+    background-color: #f3f3f3;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+}
+
+.available-scripts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.available-script {
+    cursor: grab;
+}
