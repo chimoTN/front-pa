@@ -1,0 +1,105 @@
+/* src/components/Pipeline.css */
+
+body {
+    background-color: whitesmoke; /* Couleur de fond sombre */
+    color: #ffffff; /* Couleur du texte */
+}
+
+.pipeline-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.pipeline-container h2 {
+    font-size: 2.5rem;
+    color: #ffffff; /* Couleur du texte du titre */
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.pipeline-flow {
+    display: flex;
+    align-items: center; /* Alignement au centre */
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.script-item {
+    min-width: 180px;
+    background-color: #f8f9fa; /* Couleur de fond blanche pour les cartes */
+    border: none; /* Supprimer la bordure par défaut */
+    border-radius: 10px; /* Coins arrondis */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Ombre plus foncée */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Effet de transition */
+}
+
+.script-item:hover {
+    transform: translateY(-5px); /* Légère élévation au survol */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); /* Ombre plus marquée au survol */
+}
+
+/* Centrage du texte et des boutons dans la carte */
+.script-item .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.arrow-container {
+    display: flex;
+    justify-content: center; /* Centre la flèche */
+    align-items: center; /* Aligne verticalement la flèche avec les cartes */
+    width: 40px; /* Largeur pour contrôler l'espacement */
+}
+
+.arrow {
+    font-size: 2rem;
+    color: #007bff; /* Couleur de la flèche */
+    font-weight: bold;
+    text-align: center;
+    margin: 0 10px; /* Marge pour espacer des cartes */
+}
+
+/* Styles pour les boutons */
+button {
+    transition: background-color 0.3s ease; /* Transition douce pour les boutons */
+}
+
+button:hover {
+    background-color: #0056b3; /* Couleur de fond au survol pour le bouton principal */
+}
+
+/* Styles pour les boutons de suppression */
+button.btn-danger {
+    background-color: #dc3545; /* Couleur rouge pour le bouton de suppression */
+}
+
+button.btn-danger:hover {
+    background-color: #c82333; /* Couleur rouge plus foncé au survol */
+}
+
+/* Styles pour le bouton d'ajout de script */
+.btn-add-script {
+    background-color: #28a745; /* Couleur de fond verte */
+    color: white; /* Couleur du texte */
+    border: none; /* Pas de bordure */
+    border-radius: 25px; /* Coins arrondis */
+    padding: 10px 20px; /* Espacement interne */
+    font-size: 1rem; /* Taille de police */
+    font-weight: bold; /* Texte en gras */
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Transitions douces */
+}
+
+.btn-add-script:hover {
+    background-color: #218838; /* Couleur verte plus foncée au survol */
+    transform: translateY(-2px); /* Légère élévation au survol */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Ombre au survol */
+}
+
+.btn-add-script:active {
+    transform: translateY(0); /* Retour à la position initiale au clic */
+    box-shadow: none; /* Supprimer l'ombre au clic */
+}

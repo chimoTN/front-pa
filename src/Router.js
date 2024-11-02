@@ -12,7 +12,8 @@ import ProfilePage from './pages/Profil';
 import SavedDevelopments from './pages/SavedDevelopments';
 import NewEditor from './pages/newEditor';
 import PrivateRoute from './PrivateRoute';
-import { UserProvider } from './context/appContext'; 
+import { UserProvider } from './context/appContext';
+import Pipeline from "./Pipeline";
 
 
 const AppRouter = () => {
@@ -32,6 +33,8 @@ const AppRouter = () => {
             <Route path="/saveDev" element={<SavedDevelopments />} />
             <Route path="/profil" element={<ProfilePage />} />
             <Route path="/newEditor" element={<NewEditor />} />
+
+            <Route path="/pipeline" element={<Pipeline />} />
             
           </Route>
           
