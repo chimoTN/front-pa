@@ -114,11 +114,9 @@ const NewEditor = ({ scriptContent }) => {
           name: nameFile,             
           protectionLevel: "PRIVATE",
           language: "Python",
-          inputFileExtensions: inputFiles,
-          outputFileNames: outputFiles
         };
 
-        await compilateurService.updateScript(id, source, scriptDTO); 
+        await compilateurService.createScript(scriptDTO, source);
 
       } catch (error) {
         toast.current.show({ severity: 'error', summary: 'Erreur', detail: "La sauvegarde a échoué !" });

@@ -3,6 +3,7 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Button, Card, Container, Row, Col } from 'react-bootstrap';
 import './style/Pipeline.css';
+import Axios from "axios";
 
 const ItemTypes = {
     SCRIPT: 'script',
@@ -29,8 +30,20 @@ const ScriptItem = ({ script }) => {
 };
 
 const Pipeline = () => {
+    const [availableScripts, setAvailableScripts] = useState([]);
     const [scripts, setScripts] = useState([]);
     const [nextId, setNextId] = useState(1);
+
+    useEffect(() => {
+        Axios.get('http://localhost:8080/api/scripts')
+            .then(response => {
+                setAvailableScripts(response.data);
+                console.log(response.data);
+            })
+            .catch(err => {
+                console.error('Error fetching scripts:', err);
+            });
+    }, []);
 
     const addScriptToPipeline = (script) => {
 
