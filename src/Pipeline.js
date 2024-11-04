@@ -42,6 +42,8 @@ const Pipeline = () => {
     const [currentScriptLanguage, setCurrentScriptLanguage] = useState('python');
     const [initialInputFile, setInitialInputFile] = useState(null);
 
+    const [nextId, setNextId] = useState(1);
+
     const compilateurService = CompilateurService();
     const navigate = useNavigate();
 
@@ -57,11 +59,31 @@ const Pipeline = () => {
     }, []);
 
     const handleAddToPipeline = (script) => {
-        setPipelineScripts((prev) => [...prev, script]);
+        setNextId((prevId) => {
+            const newId = prevId + 1;
+            setPipelineScripts((prevScripts) => {
+                const newPipelineScript = { id: newId, script: script };
+                console.log(prevScripts);
+                return [...prevScripts, newPipelineScript];
+            });
+            return newId;
+        });
+        /*
+        setNextId((prevId) => {
+            const newId = prevId + 1;
+            setPipelineScripts((prevScripts) => {
+                const newScript = { ...script, id: newId };
+                console.log(prevScripts);
+                return [...prevScripts, newScript];
+            });
+            return newId;
+        });
+
+         */
     };
 
     const handleRemoveFromPipeline = (id) => {
-        setPipelineScripts((prev) => prev.filter((script) => script.id !== id));
+        setPipelineScripts((prev) => prev.filter((s) => s.id !== id));
     };
 
     const handleOpenModal = async (script) => {
@@ -99,9 +121,13 @@ const Pipeline = () => {
         const formData = new FormData();
         formData.append('initialInputFile', initialInputFile);
 
-        pipelineScripts.forEach(script => {
-            formData.append('scriptIds', script.id);
+
+        console.log("ajout dans form data")
+        pipelineScripts.forEach(s => {
+            console.log("script id : " + s.script.id)
+            formData.append('scriptIds[]', s.script.id);
         });
+
 
         try {
             const response = await axios.post('http://localhost:8080/api/pipelines', formData, {
@@ -151,18 +177,18 @@ const Pipeline = () => {
 
                 <Row className="pipeline-flow justify-content-center" ref={drop}
                      style={{backgroundColor: "white", padding: '20px', minHeight: '300px'}}>
-                    {pipelineScripts.map((script, index) => (
+                    {pipelineScripts.map((s, index) => (
                         <Col key={index} xs="auto" className="mb-3 d-flex align-items-center">
                             <Card className="script-item text-center">
                                 <Card.Body className="d-flex flex-column align-items-center">
-                                    <Card.Title>{script.name}</Card.Title>
-                                    <Button className="mb-3 mt-2" variant="info" size="sm" onClick={() => handleOpenModal(script)}>
+                                    <Card.Title>{s.script.name}</Card.Title>
+                                    <Button className="mb-3 mt-2" variant="info" size="sm" onClick={() => handleOpenModal(s.script)}>
                                         Ouvrir
                                     </Button>
                                     <Button
                                         variant="danger"
                                         size="sm"
-                                        onClick={() => handleRemoveFromPipeline(script.id)}
+                                        onClick={() => handleRemoveFromPipeline(s.id)}
                                     >
                                         Supprimer
                                     </Button>

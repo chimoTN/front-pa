@@ -19,6 +19,7 @@ const PipelineStatus = () => {
         const fetchJobs = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/pipelines/${id}/jobs`);
+                console.log(response.data)
                 const initialJobs = response.data.map(job => ({
                     id: job.id,
                     scriptName: job.script_name,
