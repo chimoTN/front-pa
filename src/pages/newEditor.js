@@ -155,10 +155,12 @@ const NewEditor = ({ scriptContent }) => {
         toast.current.show({ severity: 'error', summary: 'Erreur', detail: "Erreur lors du partage du fichier." });
       }
     };
-
+/*
     useEffect(() =>{
       Save();
     },[inputFiles,outputFiles])
+
+ */
 
     useEffect(() => {
       if (scriptContent) {

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDrag, useDrop } from 'react-dnd';
 import { Button, Card, Container, Row, Col, Modal } from 'react-bootstrap';
-import Axios from 'axios';
+import axios from "./context/axios_token";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import CompilateurService from './services/compilateurService';
+import {useNavigate} from "react-router-dom";
 
 const ItemTypes = {
     SCRIPT: 'script',
@@ -40,11 +40,14 @@ const Pipeline = () => {
     const [showModal, setShowModal] = useState(false);
     const [currentScriptContent, setCurrentScriptContent] = useState('');
     const [currentScriptLanguage, setCurrentScriptLanguage] = useState('python');
+    const [initialInputFile, setInitialInputFile] = useState(null);
 
     const compilateurService = CompilateurService();
+    const navigate = useNavigate();
+
 
     useEffect(() => {
-        Axios.get('http://localhost:8080/api/scripts')
+        axios.get('http://localhost:8080/api/scripts')
             .then(response => {
                 setAvailableScripts(response.data);
             })
@@ -82,10 +85,45 @@ const Pipeline = () => {
         }),
     }));
 
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        setInitialInputFile(file);
+    };
+
+    const handleStartPipeline = async () => {
+        if (!initialInputFile) {
+            alert("Veuillez sélectionner un fichier d'entrée.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('initialInputFile', initialInputFile);
+
+        pipelineScripts.forEach(script => {
+            formData.append('scriptIds', script.id);
+        });
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/pipelines', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('Réponse du serveur:', response.data);
+            alert('Pipeline démarrée avec succès !');
+            const pipelineId = response.data.id;
+            navigate(`/pipelineSocket/${pipelineId}`);
+        } catch (error) {
+            console.error('Erreur lors du démarrage de la pipeline :', error.response ? error.response.data : error.message);
+            alert('Erreur lors du démarrage de la pipeline : ' + (error.response ? error.response.data : error.message));
+        }
+    };
+
+
     return (
         <Container fluid className="d-flex">
-
             <Col md={3} className="available-scripts-container me-3">
+                <input type="file" onChange={handleFileChange} />
                 <div
                     className="available-scripts-list"
                     style={{
@@ -105,7 +143,7 @@ const Pipeline = () => {
             <Col md={9} className="pipeline-container">
                 <div style={{display: 'flex', justifyContent: 'center', marginBottom: '20px'}}>
                     {pipelineScripts.length > 0 && (
-                        <Button className="mt-3 mb-3" variant="success" size="lg" onClick={() => alert('Pipeline démarrée')}>
+                        <Button className="mt-3 mb-3" variant="success" size="lg" onClick={handleStartPipeline}>
                             Démarrer la Pipeline
                         </Button>
                     )}

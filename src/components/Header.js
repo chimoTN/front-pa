@@ -24,8 +24,10 @@ const Header = () => {
     { label: 'Accueil', to: '/accueil' },
     { label: 'Editor', to: '/newEditor' },
     { label: 'Mes devs', to: '/saveDev' },
+
+    { label: 'PipelineEditor', to: '/pipeline' },
+    { label: 'Pipelines', to: '/pipelines' },
     { label: 'Mon profil', to: '/profil' },
-    { label: 'Pipelines', to: '/pipeline' },
   ];
 
   const profileMenuItems = [

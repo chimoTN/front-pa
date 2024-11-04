@@ -14,6 +14,9 @@ import NewEditor from './pages/newEditor';
 import PrivateRoute from './PrivateRoute';
 import { UserProvider } from './context/appContext';
 import Pipeline from "./Pipeline";
+import JobStatusWebSocket from "./JobStatusWebSocket";
+import PipelineStatus from "./PipelineStatus";
+import Pipelines from "./Pipelines";
 
 
 const AppRouter = () => {
@@ -35,7 +38,10 @@ const AppRouter = () => {
             <Route path="/newEditor" element={<NewEditor />} />
 
             <Route path="/pipeline" element={<Pipeline />} />
-            
+            <Route path="/pipelines" element={<Pipelines />} />
+            <Route path="/webSocket/:id" element={<JobStatusWebSocket />} />
+            <Route path="/pipelineSocket/:id" element={<PipelineStatus />} />
+
           </Route>
           
           {/* Route pour la page 404 */}
@@ -50,7 +56,6 @@ function HeaderWithConditionalRendering() {
   const location = useLocation();
   const excludeHeaderRoutes = ['/', '/inscription'];
 
-  // Rendre le `Sidebar` pour les routes qui ne sont pas exclues
   if (!excludeHeaderRoutes.includes(location.pathname)) {
     return <Sidebar />;
   }
