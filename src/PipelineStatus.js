@@ -19,18 +19,21 @@ const PipelineStatus = () => {
         const fetchJobs = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/pipelines/${id}/jobs`);
-                console.log(response.data)
-                const initialJobs = response.data.map(job => ({
-                    id: job.id,
-                    scriptName: job.script_name,
-                    inputFile: job.inputFile,
-                    outputFile: job.outputFile,
-                    status: job.status || 'PENDING',
-                }));
+                console.log(response.data);
 
-                if (initialJobs.length > 0 && initialJobs[0].status === 'PENDING') {
-                    initialJobs[0].status = 'RUNNING';
-                }
+                const initialJobs = response.data.map((job, index, arr) => {
+                    const isPending = job.status === 'PENDING';
+                    const isFirstJob = index === 0;
+                    const previousCompleted = index > 0 && arr[index - 1].status === 'COMPLETED';
+
+                    return {
+                        id: job.id,
+                        scriptName: job.script_name,
+                        inputFile: job.inputFile,
+                        outputFile: job.outputFile,
+                        status: isPending && (isFirstJob || previousCompleted) ? 'RUNNING' : job.status,
+                    };
+                });
 
                 setJobs(initialJobs);
                 setLoading(false);
