@@ -5,6 +5,7 @@ import '../src/style/Accueil.scss';
 import '../src/style/Post.scss';
 import { Modal, Button } from 'react-bootstrap';
 import UserProfile from './pages/UserProfile';
+import config from './config';
 
 const Accueil = () => {
   const [posts, setPosts] = useState([]);
@@ -20,7 +21,7 @@ const Accueil = () => {
   useEffect(() => {
     const fetchScripts = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/scripts');
+        const response = await axios.get(`${config.URL_CREATE_SCRIPT}`);
         if (response.data.length === 0) {
           setPosts([
             // Exemple de données
@@ -36,7 +37,7 @@ const Accueil = () => {
           await Promise.all(
             response.data.map(async (post) => {
               console.log("post.id = " + post.id)
-              const scriptContent = await axios.get(`http://localhost:8080/api/scripts/${post.id}/content`)
+              const scriptContent = await axios.get(`${config.URL_CREATE_SCRIPT}/${post.id}/content`)
               console.log(scriptContent);
               contentsMap[post.id] = scriptContent.data;
             })
@@ -55,7 +56,7 @@ const Accueil = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(`http://localhost:8080/api/users/search?query=${searchQuery}`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/search?query=${searchQuery}`);
       setSearchResults(response.data);
     } catch (error) {
       console.error('Erreur lors de la recherche des personnes:', error);

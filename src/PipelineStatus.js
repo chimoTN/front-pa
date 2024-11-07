@@ -5,6 +5,7 @@ import SockJS from 'sockjs-client';
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import axios from "./context/axios_token";
 import './style/PipelineStatus.css';
+import config from './config';
 
 const PipelineStatus = () => {
     const { id } = useParams();
@@ -18,7 +19,7 @@ const PipelineStatus = () => {
     useEffect(() => {
         const fetchJobs = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/pipelines/${id}/jobs`);
+                const response = await axios.get(config.URL_GET_PIPELINE_JOBS(id));
                 console.log(response.data);
 
                 const initialJobs = response.data.map((job, index, arr) => {
@@ -46,7 +47,7 @@ const PipelineStatus = () => {
     }, [id]);
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS(`${config.URL_WEBSOCKET}`);
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -83,7 +84,7 @@ const PipelineStatus = () => {
 
     const handleFileClick = async (jobId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/pipelines/output/${jobId}`, {
+            const response = await axios.get(config.URL_GET_PIPELINE_OUTPUT(jobId), {
                 responseType: 'blob'
             });
             console.log(response.data)

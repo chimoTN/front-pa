@@ -6,7 +6,7 @@ const CompilateurService = () => {
 
     // Créer un nouveau script
     const createScript = (scriptDTO, scriptContent) => {
-        return Axios.post(`http://localhost:8080/api/scripts`, {
+        return Axios.post(`${config.URL_CREATE_SCRIPT}`, {
             scriptDTO,
             scriptContent
         }, {
@@ -57,7 +57,7 @@ const CompilateurService = () => {
     };
 
     const recupContent = (scriptId) => {
-        return Axios.get(`http://localhost:8080/api/scripts/${scriptId}/content`, {
+        return Axios.get(`${config.URL_CREATE_SCRIPT}/${scriptId}/content`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { useParams } from 'react-router-dom';
+import config from './config';
 
 const JobStatusWebSocket = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS(`${config.URL_WEBSOCKET}`);
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {

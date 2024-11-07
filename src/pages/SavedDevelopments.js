@@ -9,6 +9,7 @@ import { Modal } from 'react-bootstrap';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {atomDark} from "react-syntax-highlighter/src/styles/prism";
+import config from '../config';
 
 const SavedDevelopments = () => {
     const [scripts, setScripts] = useState([]);
@@ -20,7 +21,8 @@ const SavedDevelopments = () => {
     const compilateurService = CompilateurService();
 
     useEffect(() => {
-        Axios.get('http://localhost:8080/api/scripts')
+
+        Axios.get(`${config.URL_CREATE_SCRIPT}`)
             .then(response => {
                 setScripts(response.data);
             })

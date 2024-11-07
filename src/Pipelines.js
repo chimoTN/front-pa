@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from "./context/axios_token";
 import './style/Pipelines.css';
+import config from './config';
 
 const Pipelines = () => {
     const [pipelines, setPipelines] = useState([]);
@@ -14,7 +15,7 @@ const Pipelines = () => {
     useEffect(() => {
         const fetchPipelines = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/api/pipelines");
+                const response = await axios.get(`${config.URL_GET_PIPELINES}`);
                 setPipelines(response.data);
                 setLoading(false);
             } catch (error) {
@@ -26,7 +27,7 @@ const Pipelines = () => {
     }, []);
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS(`${config.URL_WEBSOCKET}`);
         const stompClient = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
