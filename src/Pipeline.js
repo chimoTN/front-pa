@@ -49,7 +49,7 @@ const Pipeline = () => {
 
 
     useEffect(() => {
-        axios.get('https://projet-annuel-1.onrender.com/api/scripts/private')
+        axios.get(`${process.env.REACT_APP_API_URL}/scripts/private`)
             .then(response => {
                 setAvailableScripts(response.data);
             })
@@ -130,7 +130,7 @@ const Pipeline = () => {
 
 
         try {
-            const response = await axios.post('http://localhost:8080/api/pipelines', formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/pipelines`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
