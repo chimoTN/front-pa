@@ -49,7 +49,7 @@ const Pipeline = () => {
 
 
     useEffect(() => {
-        axios.get('https://projet-annuel-1.onrender.com/api/scripts')
+        axios.get('https://projet-annuel-1.onrender.com/api/scripts/private')
             .then(response => {
                 setAvailableScripts(response.data);
             })
