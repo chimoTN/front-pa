@@ -5,7 +5,7 @@ import { FaCheck, FaUserPlus } from "react-icons/fa";
 import { Modal, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Profile = () => {
+const ProfilePage = () => {
   const { user } = useUser();
   const [profileData, setProfileData] = useState(null);
   const [following, setFollowing] = useState([]);
@@ -24,10 +24,12 @@ const Profile = () => {
           UserService.getFollowing(userId),
           UserService.getFollowers(userId),
         ]);
+        console.log(profile)
+        console.log(followingData);
         
-        setProfileData(profile);
-        setFollowing(followingData);
-        setFollowers(followersData);
+        setProfileData(profile.data);
+        setFollowing(followingData.data);
+        setFollowers(followersData.data);
       } catch (error) {
         console.error("Erreur lors du chargement des données de profil :", error);
       }
@@ -121,4 +123,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;

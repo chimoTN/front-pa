@@ -4,6 +4,7 @@ const config = {
     URL_REGISTER: `${process.env.REACT_APP_API_URL}/users/signUp`,
 
     URL_CREATE_SCRIPT: `${process.env.REACT_APP_API_URL}/scripts`,
+    URL_GET_MY_SCRIPTS: `${process.env.REACT_APP_API_URL}/scripts/private`,
     URL_UPLOAD_FILE: `${process.env.REACT_APP_API_URL}/files`,
     URL_EXECUTE_PIPELINE: `${process.env.REACT_APP_API_URL}/scripts/execute-pipeline`,
     URL_UPDATE_SCRIPT: `${process.env.REACT_APP_API_URL}/scripts`,
@@ -14,7 +15,7 @@ const config = {
     URL_GET_PIPELINE_OUTPUT: (jobId) => `${process.env.REACT_APP_API_URL}/pipelines/output/${jobId}`,
     
     
-    URL_WEBSOCKET: `${process.env.REACT_APP_API_URL}/ws`
+    URL_WEBSOCKET: `https://projet-annuel-1.onrender.com/ws`
 
 };
 

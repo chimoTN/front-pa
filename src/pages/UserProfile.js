@@ -41,6 +41,12 @@ const UserProfile = ({ userId }) => {
                             ...prevData,
                             nbFollowers: prevData.nbFollowers + 1
                         }));
+
+                        UserService.getFollowers(userId)
+                            .then(response => {
+                                setFollowers(response.data);
+                            })
+                            .catch(err => console.error('Error fetching updated followers:', err));
                     } else {
                         console.error('Failed to follow user');
                     }
@@ -48,6 +54,7 @@ const UserProfile = ({ userId }) => {
                 .catch(err => console.error('Error following user:', err));
         }
     };
+
 
     const handleUnfollow = () => {
         if (isFollowing) {
@@ -59,6 +66,12 @@ const UserProfile = ({ userId }) => {
                             ...prevData,
                             nbFollowers: prevData.nbFollowers - 1
                         }));
+
+                        UserService.getFollowers(userId)
+                            .then(response => {
+                                setFollowers(response.data);
+                            })
+                            .catch(err => console.error('Error fetching updated followers:', err));
                     } else {
                         console.error('Failed to unfollow user');
                     }
@@ -66,6 +79,7 @@ const UserProfile = ({ userId }) => {
                 .catch(err => console.error('Error unfollowing user:', err));
         }
     };
+
 
     const openModal = (type) => {
         if (type === 'followers') {
@@ -88,7 +102,7 @@ const UserProfile = ({ userId }) => {
                 <h1 style={{ fontSize: '1.5em' }}>Profil de {profileData?.firstName} {profileData?.lastName}</h1>
                 
                 <div>
-                    {userId === localStorage.getItem('userId') ? null : isFollowing ? (
+                    {userId.toString() === localStorage.getItem('userId') ? null : isFollowing ? (
                         <button
                             onClick={handleUnfollow}
                             style={{

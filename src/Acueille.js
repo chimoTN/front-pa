@@ -29,7 +29,7 @@ const Accueil = () => {
           setLoading(false);
         } else {
           console.log("bonjour d'ici");
-          console.log("reponse : " + response.data)
+          console.log(response.data)
           setPosts(response.data);
 
           const contentsMap = {};
@@ -57,6 +57,7 @@ const Accueil = () => {
     e.preventDefault();
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/search?query=${searchQuery}`);
+      //const response = await axios.get(`http://localhost:8080/api/users/search?query=${searchQuery}`);
       setSearchResults(response.data);
     } catch (error) {
       console.error('Erreur lors de la recherche des personnes:', error);
@@ -66,6 +67,8 @@ const Accueil = () => {
 
 
   const openUserProfileModal = (userId) => {
+    console.log("BONJOUR openUserProfileModal")
+    console.log(userId)
     setModalUserId(userId);
     setIsModalOpen(true);
   };
@@ -108,10 +111,10 @@ const Accueil = () => {
         <div className="posts">
           {posts.map(post => (
             <Post 
-              key={post.id || Math.random()} // Utiliser une clé alternative temporaire si l'id est indéfini
+              key={post.id || Math.random()}
               username={"username"} 
               codeContent={contents[post.id]} 
-              script={post || {}} // Passer un objet vide par défaut si scriptDTO est indéfini
+              script={post || {}}
             />
           ))}
         </div>

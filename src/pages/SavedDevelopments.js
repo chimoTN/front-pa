@@ -22,7 +22,7 @@ const SavedDevelopments = () => {
 
     useEffect(() => {
 
-        Axios.get(`${config.URL_CREATE_SCRIPT}`)
+        Axios.get(`${config.URL_GET_MY_SCRIPTS}`)
             .then(response => {
                 setScripts(response.data);
             })

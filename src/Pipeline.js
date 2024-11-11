@@ -58,6 +58,9 @@ const Pipeline = () => {
             });
     }, []);
 
+
+
+
     const handleAddToPipeline = (script) => {
         setNextId((prevId) => {
             const newId = prevId + 1;

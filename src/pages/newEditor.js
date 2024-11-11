@@ -74,7 +74,7 @@ const NewEditor = ({ scriptContent }) => {
       setScriptDTO({
         name: nameFile,
         protectionLevel: "PRIVATE",
-        language: "Python",
+        language: selectedOption.value,
         inputFiles: "",
         outputFiles: "" 
       });
@@ -113,7 +113,7 @@ const NewEditor = ({ scriptContent }) => {
         const scriptDTO = {
           name: nameFile,             
           protectionLevel: "PRIVATE",
-          language: "Python",
+          language: selectedOption.value,
         };
 
         await compilateurService.createScript(scriptDTO, source);
