@@ -59,6 +59,17 @@ const Pipeline = () => {
     }, []);
 
 
+/*
+    useEffect(() => {
+        axios.get(`http://localhost:8080/api/scripts/private`)
+            .then(response => {
+                setAvailableScripts(response.data);
+            })
+            .catch(err => {
+                console.error('Erreur lors de la récupération des scripts :', err);
+            });
+    }, []);
+*/
 
 
     const handleAddToPipeline = (script) => {
@@ -133,11 +144,17 @@ const Pipeline = () => {
 
 
         try {
+
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/pipelines`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+            /*const response = await axios.post(`http://localhost:8080/api/pipelines`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });*/
             console.log('Réponse du serveur:', response.data);
             alert('Pipeline démarrée avec succès !');
             const pipelineId = response.data.id;
